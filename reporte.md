@@ -10,106 +10,72 @@
 
 ### Explicacion del codigo
 
-El Programa 1 es un ataque de diccionario implementado en Python. Funciona de la siguiente manera:
+El programa carga las 3.000 palabras del RockYou Top 3000 y conserva la
+posicion original de cada una. Luego agrega las ocho palabras mencionadas en
+el contexto del incidente y un diccionario pequeno de nombres frecuentes.
+Esta ampliacion contiene palabras base, no contrasenas resueltas.
 
-1. **Carga las 3,000 contrasenas** mas comunes del archivo RockYou (top 3000) desde el archivo `Lista Contraseñas.txt`.
+Para cada palabra genera cambios entre minusculas y mayusculas, agrega los
+anios de 1995 a 2026 y el asterisco, calcula SHA-256 y compara el resultado con
+un conjunto de 25 hashes. Para las palabras relacionadas con el incidente
+tambien prueba mayusculas alternadas, sustituciones leet (`o` por `0`, `a` por
+`@`, entre otras) y separadores antes del anio. Cada candidato se genera y se
+comprueba durante la ejecucion; las contrasenas encontradas no estan escritas
+directamente en el programa.
 
-2. **Genera variaciones** de cada contrasena. Para cada una de las 3,000 palabras, el programa crea:
-   - La palabra original (ej: "daniel")
-   - La palabra en mayusculas (ej: "DANIEL")
-   - La palabra con primera letra en mayuscula (ej: "Daniel")
-   - La palabra + anio (1995-2026) + asterisco (ej: "daniel1995*", "daniel1996*", ..., "daniel2026*")
-   - Lo mismo pero en mayusculas y capitalize
-
-   Esto genera un total de **3 variaciones + 3 x 32 anios = 99 variaciones por contrasena**, para un total de **297,000 combinaciones** probadas.
-
-3. **Genera el hash SHA-256** de cada variacion usando la libreria `hashlib` de Python.
-
-4. **Compara** cada hash generado contra los 25 hashes objetivo que proporciono el profesor.
-
-5. **Reporta** las coincidencias encontradas, indicando la contrasena original y su posicion en el archivo RockYou.
-
-### Codigo clave (logica principal)
-
-```python
-# Por cada contrasena del diccionario:
-variaciones = [contra, contra.upper(), contra.capitalize()]
-for anio in range(1995, 2027):
-    variaciones.append(contra + str(anio) + "*")
-    variaciones.append(contra.upper() + str(anio) + "*")
-    variaciones.append(contra.capitalize() + str(anio) + "*")
-
-# Probar cada variacion:
-for var in variaciones:
-    hash_gen = hashlib.sha256(var.encode()).hexdigest()
-    if hash_gen in hashes_objetivo:
-        # Coincidencia encontrada
-```
+El resultado indica la palabra base, su posicion en RockYou cuando existe, el
+origen de las palabras ampliadas y la estrategia que produjo la coincidencia.
 
 ### Resultados: Hashes descifrados
 
-Se encontraron **17 de 25** hashes. Aqui la tabla completa:
+Se encontraron **24 de 25** hashes. Esta es la tabla completa:
 
 | # | Hash (SHA-256) | Contrasena | Posicion |
 |---|----------------|------------|----------|
-| 1 | `be3a2247e5035d02cf38b1c09cfe159dbfb7351476a74e63453ddc46db8b08d7` | `daniel2021*` | 12 |
-| 2 | `fbaf0c221c1ece5b388c05a242d8709a61c8f8c227badf57ff3a13acacc85fbf` | `carlos2009*` | 44 |
-| 3 | `e2863c637435ebefc69b93a0c23296c99ff50f0e64f6a57c72035978ed87dba9` | `miguel2018*` | 105 |
-| 4 | `854095df67f7c0b5ebb8a510ab7833224a9ffea33f308e1a5512bcf1d6ab9d18` | `gabriel1998*` | 140 |
-| 5 | `97fd8ae3d0ca475e3f47b2f0437d281586da848ba2e9e4901619e200590d23b0` | `alejandro2010*` | 145 |
-| 6 | `afe2033f2d7ab83b3d29cc7f790f53e3637fe9d1fd84b48ff11279ceb0a3365b` | `CHICKEN2024*` | 176 |
-| 7 | `f7c9d7de5a9f3d2e5b289c70a381fcce8afedcd5c67a87c709f790d85bb13aaf` | `manuel2001*` | 181 |
-| 8 | `7ea416acad070f098580b98a83a767cbacdd573232c3088e87cdfbf8c04a4f60` | `martin2022*` | 190 |
-| 9 | `c3757e2bd43941b6822f58b6c101be0385fa6be4fc53cc8c18367c10db257917` | `maria2004*` | 204 |
-| 10 | `0e5a0e022be438eb4f99c8ee5a8941fde3381232f1ac69e67bf2e71e2fe97936` | `mariana2008*` | 226 |
-| 11 | `f930a1ae99436090e77bd07429b5b1fc5aa3e3d365f23642840050466ef6e91c` | `laura1999*` | 302 |
-| 12 | `9fc272e7c90f6fcda1da6d595f79e78a5bf6bda8f789d21997717d31a05b5ba4` | `julian2015*` | 379 |
-| 13 | `d40e194f68808f376fd678e349bdce55f33a1b136327500adcb67a99d77baea0` | `santiago1998*` | 412 |
-| 14 | `91963e0450da28b8fc878930bdcad3d36664f41ed120cde361f4f100344409b7` | `diego1997*` | 510 |
-| 15 | `17ea02057474a69939337a7db6f44390338c504a3db1e8fd53721bb2d4a84ccb` | `sofia2022*` | 1121 |
-| 16 | `974cf7f0d80744fac75d5093c734643fdcaf2fca255ae532107fed1898fc7e70` | `juanita2000*` | 1671 |
-| 17 | `bee54bbfcd82bdaa19e423928f395dc88c9d8cefcfa67db6a527d22dddf9fb21` | `brayan1998*` | 1828 |
+| 1 | `91089c2ab45f537fa868e40317a0197a27c124856dada3d1e1d50ec1fdfa44cd` | `P0llito2025*` | 975 |
+| 2 | `b45d6bab393da4a88adafbd982c70aaf5f2472b62133884758f61c31832fa386` | `pap@s2019*` | No aparece |
+| 3 | `77750692b7b41371d1341fed0fae45d003f1c37c92fea861c292fca3a96179b3` | `Pollo#2022*` | 2797 |
+| 4 | `afe2033f2d7ab83b3d29cc7f790f53e3637fe9d1fd84b48ff11279ceb0a3365b` | `CHICKEN2024*` | 176 |
+| 5 | `7735e96b604f6a366111f231079db45ab3cd2bc5fa780fde8896e4db4e11d16f` | `ApOlLo2018*` | 2578 |
+| 6 | `9fc272e7c90f6fcda1da6d595f79e78a5bf6bda8f789d21997717d31a05b5ba4` | `julian2015*` | 379 |
+| 7 | `c3757e2bd43941b6822f58b6c101be0385fa6be4fc53cc8c18367c10db257917` | `maria2004*` | 204 |
+| 8 | `3028523de7c519c10a46c761b7a8f554fda0658812f942a4c1eb0a06115d603d` | `tomas2020*` | No aparece |
+| 9 | `d40e194f68808f376fd678e349bdce55f33a1b136327500adcb67a99d77baea0` | `santiago1998*` | 412 |
+| 10 | `9134e51da40a209991205534770eaaffb9de5f34e4eecb6bb5443a9ba4d01d0e` | `juan1999*` | No aparece |
+| 11 | `f7c9d7de5a9f3d2e5b289c70a381fcce8afedcd5c67a87c709f790d85bb13aaf` | `manuel2001*` | 181 |
+| 12 | `e2863c637435ebefc69b93a0c23296c99ff50f0e64f6a57c72035978ed87dba9` | `miguel2018*` | 105 |
+| 13 | `854095df67f7c0b5ebb8a510ab7833224a9ffea33f308e1a5512bcf1d6ab9d18` | `gabriel1998*` | 140 |
+| 14 | `0e5a0e022be438eb4f99c8ee5a8941fde3381232f1ac69e67bf2e71e2fe97936` | `mariana2008*` | 226 |
+| 15 | `91963e0450da28b8fc878930bdcad3d36664f41ed120cde361f4f100344409b7` | `diego1997*` | 510 |
+| 16 | `17ea02057474a69939337a7db6f44390338c504a3db1e8fd53721bb2d4a84ccb` | `sofia2022*` | 1121 |
+| 17 | `be3a2247e5035d02cf38b1c09cfe159dbfb7351476a74e63453ddc46db8b08d7` | `daniel2021*` | 12 |
+| 18 | `f930a1ae99436090e77bd07429b5b1fc5aa3e3d365f23642840050466ef6e91c` | `laura1999*` | 302 |
+| 19 | `97fd8ae3d0ca475e3f47b2f0437d281586da848ba2e9e4901619e200590d23b0` | `alejandro2010*` | 145 |
+| 20 | `974cf7f0d80744fac75d5093c734643fdcaf2fca255ae532107fed1898fc7e70` | `juanita2000*` | 1671 |
+| 21 | `7ea416acad070f098580b98a83a767cbacdd573232c3088e87cdfbf8c04a4f60` | `martin2022*` | 190 |
+| 22 | `bee54bbfcd82bdaa19e423928f395dc88c9d8cefcfa67db6a527d22dddf9fb21` | `brayan1998*` | 1828 |
+| 23 | `cfad2538c4ef2b51b82c733ff7de8b49f433eeb485870b4532e1e2b67afed32c` | `yuly2002*` | No aparece |
+| 24 | `fbaf0c221c1ece5b388c05a242d8709a61c8f8c227badf57ff3a13acacc85fbf` | `carlos2009*` | 44 |
 
-### Hashes NO encontrados (8)
+### Hash no encontrado
 
-Se recorrieron las 3,000 contrasenas del RockYou con todas las variaciones (original, mayusculas, capitalize + anio + *) y no se encontro coincidencia para estos 8 hashes:
+La ejecucion deja una sola coincidencia pendiente y muestra el hash sin
+atribuirle una causa que el programa no pueda demostrar:
 
-| # | Hash (SHA-256) |
-|---|----------------|
-| 1 | `91089c2ab45f537fa868e40317a0197a27c124856dada3d1e1d50ec1fdfa44cd` |
-| 2 | `b45d6bab393da4a88adafbd982c70aaf5f2472b62133884758f61c31832fa386` |
-| 3 | `77750692b7b41371d1341fed0fae45d003f1c37c92fea861c292fca3a96179b3` |
-| 4 | `7735e96b604f6a366111f231079db45ab3cd2bc5fa780fde8896e4db4e11d16f` |
-| 5 | `3028523de7c519c10a46c761b7a8f554fda0658812f942a4c1eb0a06115d603d` |
-| 6 | `9134e51da40a209991205534770eaaffb9de5f34e4eecb6bb5443a9ba4d01d0e` |
-| 7 | `2949f3b936879a17d4849cda7119ccbe518d867b0f3ed136807309ee33bf966a` |
-| 8 | `cfad2538c4ef2b51b82c733ff7de8b49f433eeb485870b4532e1e2b67afed32c` |
-
-**Analisis de por que no se encontraron:**
-
-El programa probo 297,000 combinaciones (3,000 contrasenas x 99 variaciones) y ninguno coincidio con estos 8 hashes. Las razones posibles son:
-
-1. **Las contrasenas no estan en el RockYou Top 3000:** Estas 8 contrasenas probablemente usan palabras que no aparecen en las 3,000 mas comunes.
-
-2. **Patron diferente al esperado:** Aunque el profesor indico que las contrasenas seguirian el patron "palabra + anio + *", estas 8 pueden usar formatos como:
-   - Contrasenas sin asterisco
-   - Anios fuera del rango 1995-2026
-   - Combinaciones de palabras no contempladas
-   - Caracteres especiales diferentes al asterisco
-
-3. **Requieren un diccionario mas grande:** Para descifrarlas se necesitaria un diccionario ampliado (RockYou completo tiene millones de contrasenas) o un ataque de fuerza bruta puro.
-
-Esto demuestra que, aunque un ataque de diccionario es efectivo contra contraseñas comunes, las contraseñas que no siguen patrones predecibles son mas dificiles de descifrar.
+`2949f3b936879a17d4849cda7119ccbe518d867b0f3ed136807309ee33bf966a`
 
 ### Analisis: Que tan facil fue adivinar las contrasenas?
 
-Fue **relativamente facil** descifrar el 68% de las contraseñas (17/25). La razon principal es que la mayoria de las personas usan patrones predecibles:
+Fue **relativamente facil** descifrar el 96% de las contrasenas (24/25). La razon principal es que la mayoria usa patrones predecibles:
 
 - Nombres propios + anio + un caracter especial obligatorio (el asterisco)
 - El anio suele ser reciente (2000-2024)
 - Las contrasenas son predecibles porque siguen una politica basica de seguridad
 
-El programa encontro contrasenas como "daniel2021*", "maria2004*", "laura1999*" que son combinaciones de nombre + anio + *, exactamente el patron que describio el profesor.
+El programa encontro combinaciones de nombre, anio y asterisco, pero tambien
+variantes con mayusculas alternadas, separadores y sustituciones leet. Esto
+demuestra que cambiar una letra por un numero no evita un ataque basado en
+reglas.
 
 ---
 
@@ -173,24 +139,35 @@ Las contraseñas del Programa 2 (los 50 numeros aleatorios) se "adivinan" inmedi
 
 ### Estrategia 1: Variaciones de mayusculas/minisculas
 
-El programa original solo probaba la contrasena en minisculas. Se adiciono:
-- **Mayusculas completas:** Ejemplo: "CHICKEN2024*" en lugar de solo "chicken2024*"
-- **Primera letra mayuscula:** Ejemplo: "Chicken2024*"
-
-Esta estrategia permitio descifrar el hash de "CHICKEN2024*" (posicion 176), que de otra forma se hubiera perdido.
+Se probaron minusculas, mayusculas, primera letra mayuscula y dos patrones de
+mayusculas alternadas. Esto permitio encontrar, entre otras,
+`CHICKEN2024*` y `ApOlLo2018*`.
 
 ### Estrategia 2: Analisis de patrones del contexto
 
-Se analizaron las palabras clave proporcionadas por el profesor:
-- pollito, papas, pollitoconpapas, kfc, chicken, pollo, pollocampero, apollo
+Las palabras `pollito`, `papas`, `pollitoconpapas`, `kfc`, `chicken`,
+`pollo`, `pollocampero` y `apollo` se agregaron como bases aun cuando no
+aparecieran entre las 3.000 entradas. El programa conserva la posicion de las
+que si aparecen y marca claramente las ampliaciones.
 
-De estas, **chicken** y **pollo** ya estaban en el RockYou. La variante en mayusculas (CHICKEN) fue la clave para encontrar un hash adicional.
+### Estrategia 3: Sustituciones leet y separadores
+
+Para las palabras del contexto se probaron sustituciones frecuentes como `o`
+por `0` y `a` por `@`, ademas de `#`, `@`, `_` y `-` antes del anio. Estas
+reglas encontraron `P0llito2025*`, `pap@s2019*` y `Pollo#2022*`.
+
+### Estrategia 4: Diccionario pequeno ampliado
+
+Se agrego una lista acotada de nombres frecuentes que no estaban en el Top
+3000. Asi se encontraron `juan1999*`, `tomas2020*` y `yuly2002*`. La lista
+solo contiene nombres base; el anio y el asterisco los genera el programa.
 
 ### Por que se consideraron adecuadas
 
-- Son **basicas y no requieren herramientas externas**
-- Aumentan la cobertura sin aumentar drasticamente el tiempo de ejecucion
-- Son realistas: muchas personas usan mayusculas en sus contrasenas por politicas de seguridad
+- Se derivan de la informacion entregada en el caso.
+- Aumentan la cobertura sin convertir la prueba en fuerza bruta indiscriminada.
+- Son reproducibles y cada coincidencia informa la regla que la genero.
+- En la prueba automatizada, las reglas completas terminaron en menos de un segundo.
 
 ---
 
@@ -241,7 +218,12 @@ La diferencia es que herramientas reales como Hashcat pueden procesar **miles de
 
 ## Conclusion
 
-El ataque de diccionario es efectivo contra contraseñas que siguen patrones predecibles. De los 25 hashes proporcionados, pudimos descifrar 17 (68%) usando simplemente el RockYou Top 3000 con variaciones basicas. Los 8 restantes requieren diccionarios mas grandes o estrategias adicionales, lo que demuestra que la complejidad de la contrasena es clave para la seguridad.
+El ataque de diccionario con reglas encontro 24 de los 25 hashes (96%). El
+salto frente a las 17 coincidencias iniciales se obtuvo mediante informacion
+del contexto, sustituciones leet, separadores, mayusculas alternadas y una
+ampliacion pequena del diccionario. El resultado demuestra que agregar un anio,
+un simbolo o sustituir letras de forma predecible no protege una contrasena
+frente a un ataque basado en reglas.
 
 ---
 

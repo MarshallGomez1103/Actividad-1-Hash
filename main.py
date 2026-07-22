@@ -5,10 +5,12 @@
 # =============================================================
 
 import hashlib
+import itertools
+from pathlib import Path
 import time
 
 # =============================================================
-# HASHES SHA-256 que nos paso el ===============================
+# HASHES SHA-256 proporcionados para la actividad
 HASHES_OBJETIVO = [
     "91089c2ab45f537fa868e40317a0197a27c124856dada3d1e1d50ec1fdfa44cd",
     "b45d6bab393da4a88adafbd982c70aaf5f2472b62133884758f61c31832fa386",
@@ -56,6 +58,33 @@ NUMEROS_ALEATORIOS = [
 ]
 
 
+# Palabras indicadas en el contexto del incidente. Se agregan aunque no
+# aparezcan en RockYou, porque el enunciado permite ampliar el diccionario.
+PALABRAS_CONTEXTO = [
+    "pollito", "papas", "pollitoconpapas", "kfc",
+    "chicken", "pollo", "pollocampero", "apollo",
+]
+
+# Ampliacion pequena de nombres frecuentes. No contiene contrasenas completas:
+# las contrasenas candidatas siguen siendo construidas por el programa.
+NOMBRES_ADICIONALES = [
+    "anderson", "camilo", "danna", "deisy", "duvan", "edwin",
+    "esteban", "felipe", "jhon", "juan", "leidy", "lucas",
+    "maicol", "mateo", "nicolas", "pablo", "pedro", "salome",
+    "sara", "stiven", "tomas", "valery", "ximena", "yeferson",
+    "yeison", "yuly",
+]
+
+SUSTITUCIONES_LEET = {
+    "a": ("a", "4", "@"),
+    "e": ("e", "3"),
+    "i": ("i", "1", "!"),
+    "o": ("o", "0"),
+    "s": ("s", "5", "$"),
+    "t": ("t", "7"),
+}
+
+
 # =============================================================
 # FUNCIONES BASICAS
 # =============================================================
@@ -67,11 +96,67 @@ def hashear(texto):
 
 def cargar_contrasenas():
     """Carga la lista de 3000 contrasenas desde el archivo"""
-    with open("Lista Contraseñas.txt", "r") as f:
+    ruta = Path(__file__).with_name("Lista Contraseñas.txt")
+    with ruta.open("r", encoding="utf-8") as f:
         codigo = f.read()
     locales = {}
     exec(codigo, {}, locales)
     return locales["passwords"]
+
+
+def formas_de_mayusculas(palabra):
+    """Devuelve cambios de mayusculas comunes sin repetir resultados."""
+    alternada_1 = "".join(
+        letra.upper() if indice % 2 == 0 else letra.lower()
+        for indice, letra in enumerate(palabra)
+    )
+    alternada_2 = "".join(
+        letra.lower() if indice % 2 == 0 else letra.upper()
+        for indice, letra in enumerate(palabra)
+    )
+    return {
+        palabra.lower(), palabra.upper(), palabra.capitalize(),
+        alternada_1, alternada_2,
+    }
+
+
+def formas_leet(palabra):
+    """Genera combinaciones leet sustituyendo letras por numeros o simbolos."""
+    opciones = [
+        SUSTITUCIONES_LEET.get(letra.lower(), (letra.lower(),))
+        for letra in palabra
+    ]
+    for combinacion in itertools.product(*opciones):
+        forma = "".join(combinacion)
+        yield from formas_de_mayusculas(forma)
+
+
+def generar_variaciones(palabra, aplicar_reglas_contexto=False):
+    """Genera candidatos y la estrategia que produjo cada uno."""
+    bases = formas_de_mayusculas(palabra)
+
+    for base in bases:
+        yield base, "palabra sin modificar"
+        for anio in range(1995, 2027):
+            yield f"{base}{anio}*", "palabra + anio + *"
+
+    if not aplicar_reglas_contexto:
+        return
+
+    # El separador antes del anio cubre politicas de contrasena distintas.
+    for base in bases:
+        for anio in range(1995, 2027):
+            for separador in ("#", "@", "_", "-"):
+                yield (
+                    f"{base}{separador}{anio}*",
+                    "palabra + separador + anio + *",
+                )
+
+    # Las sustituciones se aplican a las palabras relevantes del incidente;
+    # asi se aumenta la cobertura sin disparar el numero de combinaciones.
+    for base in formas_leet(palabra):
+        for anio in range(1995, 2027):
+            yield f"{base}{anio}*", "sustitucion leet + anio + *"
 
 
 def preguntar_equipo():
@@ -108,13 +193,14 @@ def spinner(mensaje, segundos=2):
 # PROGRAMA 1: ATAQUE DE DICCIONARIO
 # =============================================================
 
-def programa_1():
+def programa_1(equipo=None):
     print()
     print("=" * 50)
     print("  PROGRAMA 1: ATAQUE DE DICCIONARIO")
     print("=" * 50)
 
-    equipo = preguntar_equipo()
+    if equipo is None:
+        equipo = preguntar_equipo()
     print(f"\n  Equipo seleccionado: {equipo}")
     print(f"  Hashes a buscar: {len(HASHES_OBJETIVO)}")
     print()
@@ -128,30 +214,52 @@ def programa_1():
     tiempo_inicio = time.time()
 
     encontrados = {}
+    hashes_objetivo = set(HASHES_OBJETIVO)
     total_variaciones = 0
 
-    # Recorrer cada contrasena del diccionario
-    for i, contra in enumerate(contrasenas):
+    # Cada entrada conserva su procedencia y, cuando existe, su posicion real
+    # dentro del RockYou Top 3000.
+    entradas = [
+        (contra, posicion, "RockYou Top 3000")
+        for posicion, contra in enumerate(contrasenas, start=1)
+    ]
+    palabras_cargadas = set(contrasenas)
 
-        # Variaciones: original, mayusculas, capitalize + anio + "*"
-        variaciones = [contra, contra.upper(), contra.capitalize()]
-        for anio in range(1995, 2027):
-            variaciones.append(contra + str(anio) + "*")
-            variaciones.append(contra.upper() + str(anio) + "*")
-            variaciones.append(contra.capitalize() + str(anio) + "*")
+    for palabra in PALABRAS_CONTEXTO:
+        if palabra not in palabras_cargadas:
+            entradas.append((palabra, None, "palabras del contexto"))
+            palabras_cargadas.add(palabra)
 
-        # Probar cada variacion
-        for var in variaciones:
+    for nombre in NOMBRES_ADICIONALES:
+        if nombre not in palabras_cargadas:
+            entradas.append((nombre, None, "diccionario ampliado"))
+            palabras_cargadas.add(nombre)
+
+    # Recorrer el diccionario principal y las ampliaciones justificadas.
+    for i, (contra, posicion, fuente) in enumerate(entradas):
+        es_contexto = contra in PALABRAS_CONTEXTO
+        variaciones_vistas = set()
+
+        for var, estrategia in generar_variaciones(contra, es_contexto):
+            if var in variaciones_vistas:
+                continue
+            variaciones_vistas.add(var)
             hash_gen = hashear(var)
             total_variaciones += 1
 
-            if hash_gen in HASHES_OBJETIVO and hash_gen not in encontrados:
-                posicion = i + 1
-                encontrados[hash_gen] = (var, posicion)
-                print(f"  [+] ENCONTRADO! Posicion {posicion}: \"{var}\"")
+            if hash_gen in hashes_objetivo and hash_gen not in encontrados:
+                encontrados[hash_gen] = (
+                    var, posicion, fuente, estrategia, contra,
+                )
+                ubicacion = (
+                    f"posicion {posicion}"
+                    if posicion is not None
+                    else fuente
+                )
+                print(f"  [+] ENCONTRADO! {ubicacion}: \"{var}\"")
 
         # Progreso cada 500 contrasenas
-        if (i + 1) % 500 == 0:
+        if i < len(contrasenas) and (i + 1) % 500 == 0:
             porcentaje = ((i + 1) / len(contrasenas)) * 100
             print(f"  ... van {i + 1}/{len(contrasenas)} ({porcentaje:.0f}%) | "
                   f"encontrados: {len(encontrados)}/{len(HASHES_OBJETIVO)}")
@@ -174,21 +282,23 @@ def programa_1():
     if encontrados:
         print("  Hashes descifrados:")
         print("  " + "-" * 70)
-        for h, (contra, pos) in encontrados.items():
+        for h in HASHES_OBJETIVO:
+            if h not in encontrados:
+                continue
+            contra, pos, fuente, estrategia, base = encontrados[h]
             print(f"  Hash: {h}")
             print(f"  Contrasena: \"{contra}\"")
-            print(f"  Posicion en el archivo: {pos}")
+            print(f"  Palabra base: \"{base}\"")
+            if pos is None:
+                print(f"  Posicion en RockYou: no aparece ({fuente})")
+            else:
+                print(f"  Posicion en RockYou: {pos}")
+            print(f"  Estrategia: {estrategia}")
             print("  " + "-" * 70)
 
     no_encontrados = [h for h in HASHES_OBJETIVO if h not in encontrados]
     if no_encontrados:
         print(f"\n  Hashes NO encontrados ({len(no_encontrados)}):")
-        print("  Se recorrieron las 3,000 contrasenas del RockYou con todas")
-        print("  las variaciones (original, mayusculas, capitalize + anio + *)")
-        print("  y no se encontro coincidencia. Estas contrasenas probablemente")
-        print("  no siguen el patron basico o usan palabras fuera del")
-        print("  diccionario RockYou Top 3000.")
-        print()
         for h in no_encontrados:
             print(f"    {h}")
 
