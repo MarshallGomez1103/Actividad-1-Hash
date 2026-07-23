@@ -117,17 +117,19 @@ Generados con `random.sample(range(10000000, 90000000), 50)` usando seed=42 para
 
 ### Analisis de rendimiento
 
-El Paso 1 (50 hashes) se completa instantaneamente en cualquier computador (menos de 1 segundo).
+El Paso 1 (50 hashes) se completa en fracciones de segundo en cualquier computador, asi que para comparar equipos conviene mirar sobre todo el tiempo total del Programa 2. En este analisis se comparan cinco computadores: uno lento, tres personales (Thomas, Daniel y Julián) y uno de FabLab.
 
-El Paso 2 (100M de hashes) varia enormemente dependiendo del hardware:
+El Paso 2 (100M de hashes) varia segun el hardware y es el que marca la diferencia real entre computadores:
 
-| Tipo de PC | Tiempo estimado Paso 2 | Velocidad aprox. |
-|------------|------------------------|-------------------|
-| Lento (antiguo) | 4-8 horas | ~3,000-7,000 hashes/seg |
-| Normal (personal) | 1-3 horas | ~10,000-30,000 hashes/seg |
-| FabLab (practica) | Variable segun el PC | Variable |
+| Tipo de PC | Computador         | Paso 1        | Paso 2        | Tiempo total       | Velocidad aprox. |
+|------------|--------------------|---------------|---------------|--------------------|------------------|
+| Lento (antiguo) | Antiguo Thomas     | 0.70 s        | 69.46 s       | 80.31 s (1.34 min) | ~1.44 millones hashes/seg |
+| Normal (personal) | Thomas             | 0.40 s        | 40.91 s       | 44.17 s (0.74 min) | ~2.26 millones hashes/seg |
+| Normal (personal) | Daniel             | Por completar | Por completar | Por completar      | Por calcular con sus datos |
+| Normal (personal) | Julián             | Por completar | Por completar | Por completar      | Por calcular con sus datos |
+| FabLab (practica) | Equipo de practica | 0.63 s        | 73.12 s       | 78.89 s (1.31 min) | ~1.27 millones hashes/seg |
 
-**Diferencia entre los 50 hashes y los 100M:** El Paso 1 toma fracciones de segundo, mientras que el Paso 2 puede tomar horas. Esto demuestra que el costo computacional crece linealmente con la cantidad de operaciones. Un computador 3x mas rapido completa el trabajo 3x mas rapido, lo cual importa mucho en tareas de seguridad.
+**Diferencia entre los 50 hashes y los 100M:** El Paso 1 toma menos de un segundo, mientras que el Paso 2 concentra casi todo el trabajo y puede pasar de segundos a horas segun el computador. Esto demuestra que el costo computacional crece linealmente con la cantidad de operaciones y que una mejora de hardware impacta directamente en el tiempo total de ejecucion.
 
 ### Analisis: Que tan facil fue adivinar las contrasenas?
 
