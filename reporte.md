@@ -129,6 +129,12 @@ El Paso 2 (100M de hashes) varia segun el hardware y es el que marca la diferenc
 | Normal (personal) | Julián             | Por completar | Por completar | Por completar      | Por calcular con sus datos |
 | FabLab (practica) | Equipo de practica | 0.63 s        | 73.12 s       | 78.89 s (1.31 min) | ~1.27 millones hashes/seg |
 
+La velocidad aproximada se calcula con la siguiente formula:
+
+**Velocidad aprox. = 100,000,000 / tiempo del Paso 2 en segundos**
+
+En otras palabras, se divide la cantidad total de hashes procesados entre el tiempo real que tomo el Paso 2, porque ese es el tramo que concentra el trabajo intensivo del programa.
+
 **Diferencia entre los 50 hashes y los 100M:** El Paso 1 toma menos de un segundo, mientras que el Paso 2 concentra casi todo el trabajo y puede pasar de segundos a horas segun el computador. Esto demuestra que el costo computacional crece linealmente con la cantidad de operaciones y que una mejora de hardware impacta directamente en el tiempo total de ejecucion.
 
 ### Analisis: Que tan facil fue adivinar las contrasenas?
@@ -170,6 +176,8 @@ solo contiene nombres base; el anio y el asterisco los genera el programa.
 - Aumentan la cobertura sin convertir la prueba en fuerza bruta indiscriminada.
 - Son reproducibles y cada coincidencia informa la regla que la genero.
 - En la prueba automatizada, las reglas completas terminaron en menos de un segundo.
+
+Ademas, se ampliaron porque el enunciado indica que no todas las contrasenas necesariamente estan en el Top 3000 de RockYou. Por eso, usar solo una lista corta habria dejado contrasenas sin descubrir; al agregar las palabras del contexto, variantes de mayusculas/minusculas, sustituciones leet y un diccionario pequeno de nombres frecuentes, se mejora la cobertura sin salir del enfoque de ataque de diccionario con reglas.
 
 ---
 
