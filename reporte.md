@@ -28,7 +28,7 @@ origen de las palabras ampliadas y la estrategia que produjo la coincidencia.
 
 ### Resultados: Hashes descifrados
 
-Se encontraron **24 de 25** hashes. Esta es la tabla completa:
+Se encontraron **25 de 25** hashes. Esta es la tabla completa:
 
 | # | Hash (SHA-256) | Contraseña | Posición |
 |---|----------------|------------|----------|
@@ -56,17 +56,11 @@ Se encontraron **24 de 25** hashes. Esta es la tabla completa:
 | 22 | `bee54bbfcd82bdaa19e423928f395dc88c9d8cefcfa67db6a527d22dddf9fb21` | `brayan1998*` | 1828 |
 | 23 | `cfad2538c4ef2b51b82c733ff7de8b49f433eeb485870b4532e1e2b67afed32c` | `yuly2002*` | No aparece |
 | 24 | `fbaf0c221c1ece5b388c05a242d8709a61c8f8c227badf57ff3a13acacc85fbf` | `carlos2009*` | 44 |
-
-### Hash no encontrado
-
-La ejecución deja una sola coincidencia pendiente y muestra el hash sin
-atribuirle una causa que el programa no pueda demostrar:
-
-`2949f3b936879a17d4849cda7119ccbe518d867b0f3ed136807309ee33bf966a`
+| 25 | `2949f3b936879a17d4849cda7119ccbe518d867b0f3ed136807309ee33bf966a` | `elioth2000*` | No aparece |
 
 ### Análisis: ¿Qué tan fácil fue adivinar las contraseñas?
 
-Fue **relativamente fácil** descifrar el 96% de las contraseñas (24/25). La razón principal es que la mayoría sigue patrones bastante predecibles:
+Fue **relativamente fácil** descifrar el 100% de las contraseñas (25/25). La razón principal es que la mayoría sigue patrones bastante predecibles:
 
 - Nombre propio + año + un carácter especial obligatorio (el asterisco)
 - El año suele ser reciente (2000-2024)
@@ -75,7 +69,8 @@ Fue **relativamente fácil** descifrar el 96% de las contraseñas (24/25). La ra
 El programa encontró combinaciones de nombre, año y asterisco, pero también
 variantes con mayúsculas alternadas, separadores y sustituciones leet. En la
 práctica, eso confirma que cambiar una letra por un número no basta para
-proteger una contraseña cuando el patrón sigue siendo casi el mismo.
+proteger una contraseña cuando el patrón sigue siendo casi el mismo, sobre todo
+si se usan nombres de estudiantes del curso.
 
 ---
 
@@ -123,11 +118,12 @@ El Paso 2 (100M de hashes) varía según el hardware y es el que marca la difere
 
 | Tipo de PC | Computador         | Paso 1        | Paso 2        | Tiempo total       | Velocidad aprox. |
 |------------|--------------------|---------------|---------------|--------------------|------------------|
-| Lento (antiguo) | Equipo antiguo     | 0.70 s        | 69.46 s       | 80.31 s (1.34 min) | ~1.44 millones hashes/seg |
-| Normal (personal) | Thomas              | 0.40 s        | 40.91 s       | 44.17 s (0.74 min) | ~2.26 millones hashes/seg |
+| Lento (antiguo) | Equipo antiguo     | 0.72 s        | 79.45 s       | 82.52 s (1.38 min) | ~1.26 millones hashes/seg |
+| Normal (personal) | Thomas             | 0.39 s         | 40.80 s       | 44.03 s (0.73 min) | ~2.45 millones hashes/seg |
 | Normal (personal) | Daniel             | Por completar | Por completar | Por completar      | Por calcular con sus datos |
-| Normal (personal) | Julián             | Por completar | Por completar | Por completar      | Por calcular con sus datos |
-| FabLab (práctica) | Equipo de práctica | 0.63 s        | 73.12 s       | 78.89 s (1.31 min) | ~1.27 millones hashes/seg |
+| Normal (personal) | Julián             | 0.61 s        | 61.92 s       | 67.14 s (1.12 min) | ~1.62 millones hashes/seg |
+| Normal (personal) | Santiago           | Por completar | Por completar | Por completar      | Por calcular con sus datos |
+| FabLab (práctica) | Equipo de práctica | 0.63 s        | 73.12 s       | 78.89 s (1.31 min) | ~1.37 millones hashes/seg |
 
 La velocidad aproximada se calcula con la siguiente fórmula:
 
@@ -164,13 +160,15 @@ que sí aparecen y marca claramente las ampliaciones.
 
 Para las palabras del contexto se probaron sustituciones frecuentes como `o`
 por `0` y `a` por `@`, además de `#`, `@`, `_` y `-` antes del año. Estas
-reglas encontraron `P0llito2025*`, `pap@s2019*` y `Pollo#2022*`.
+reglas encontraron `P0llito2025*`, `pap@s2019*`, `Pollo#2022*` y `elioth2000*`.
 
 ### Estrategia 4: Diccionario pequeño ampliado
 
 Se agregó una lista acotada de nombres frecuentes que no estaban en el Top
-3000. Así se encontraron `juan1999*`, `tomas2020*` y `yuly2002*`. La lista
-solo contiene nombres base; el año y el asterisco los genera el programa.
+3000. Así se encontraron `juan1999*`, `tomas2020*`, `yuly2002*` y `elioth2000*`.
+La lista también se amplió con nombres de integrantes y estudiantes del curso;
+solo contiene nombres base, mientras que el año y el asterisco los genera el
+programa.
 
 ### Por qué se consideraron adecuadas
 
@@ -179,7 +177,7 @@ solo contiene nombres base; el año y el asterisco los genera el programa.
 - Son reproducibles y cada coincidencia informa la regla que la generó.
 - En la prueba automatizada, las reglas completas terminaron en menos de un segundo.
 
-Además, se ampliaron porque el enunciado indica que no todas las contraseñas necesariamente están en el Top 3000 de RockYou. Por eso, usar solo una lista corta habría dejado contraseñas sin descubrir; al agregar las palabras del contexto, variantes de mayúsculas/minúsculas, sustituciones leet y un diccionario pequeño de nombres frecuentes, se mejora la cobertura sin salir del enfoque de ataque de diccionario con reglas.
+Además, se ampliaron porque el enunciado indica que no todas las contraseñas necesariamente están en el Top 3000 de RockYou. Por eso, usar solo una lista corta habría dejado contraseñas sin descubrir; al agregar las palabras del contexto, variantes de mayúsculas/minúsculas, sustituciones leet y un diccionario pequeño de nombres frecuentes de estudiantes del curso, se mejora la cobertura sin salir del enfoque de ataque de diccionario con reglas.
 
 ---
 
@@ -230,7 +228,7 @@ La diferencia es que herramientas reales como Hashcat pueden procesar **miles de
 
 ## Conclusión
 
-El ataque de diccionario con reglas encontró 24 de los 25 hashes (96%). El
+El ataque de diccionario con reglas encontró 25 de los 25 hashes (100%). El
 salto frente a las 17 coincidencias iniciales se obtuvo combinando información
 del contexto, sustituciones leet, separadores, mayúsculas alternadas y una
 ampliación pequeña del diccionario. En pocas palabras: agregar un año, un
