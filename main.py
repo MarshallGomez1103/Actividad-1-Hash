@@ -68,11 +68,11 @@ PALABRAS_CONTEXTO = [
 # Ampliacion pequena de nombres frecuentes. No contiene contrasenas completas:
 # las contrasenas candidatas siguen siendo construidas por el programa.
 NOMBRES_ADICIONALES = [
-    "anderson", "camilo", "danna", "deisy", "duvan", "edwin",
-    "esteban", "felipe", "jhon", "juan", "leidy", "lucas",
-    "maicol", "mateo", "nicolas", "pablo", "pedro", "salome",
-    "sara", "stiven", "tomas", "valery", "ximena", "yeferson",
-    "yeison", "yuly",
+    "anderson", "camilo", "danna", "daniel", "david", "deisy", "duvan", "edwin",
+    "elioth", "esteban", "felipe", "gabriel", "jhon", "juan", "julian",
+    "leidy", "lucas", "maicol", "mateo", "nicolas", "pablo", "pedro",
+    "salome", "santiago", "sara", "stiven", "thomas", "tomas", "valery",
+    "ximena", "yeferson", "yeison", "yuly",
 ]
 
 SUSTITUCIONES_LEET = {
