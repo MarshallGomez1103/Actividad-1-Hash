@@ -120,10 +120,10 @@ El Paso 2 (100M de hashes) varía según el hardware y es el que marca la difere
 |------------|--------------------|---------------|---------------|--------------------|------------------|
 | Lento (antiguo) | Equipo antiguo     | 0.72 s        | 79.45 s       | 82.52 s (1.38 min) | ~1.26 millones hashes/seg |
 | Normal (personal) | Thomas             | 0.39 s         | 40.80 s       | 44.03 s (0.73 min) | ~2.45 millones hashes/seg |
-| Normal (personal) | Daniel             | Por completar | Por completar | Por completar      | Por calcular con sus datos |
+| Normal (personal) | Daniel             | 1.27 s        | 147.78 s      | 160.15 s (2.67 min) | ~0.68 millones hashes/seg |
 | Normal (personal) | Julián             | 0.61 s        | 61.92 s       | 67.14 s (1.12 min) | ~1.62 millones hashes/seg |
-| Normal (personal) | Santiago           | Por completar | Por completar | Por completar      | Por calcular con sus datos |
-| FabLab (práctica) | Equipo de práctica | Por completar | Por completar | Por completar      | Por calcular con sus datos |
+| Normal (personal) | Santiago           | 0.63 s         | 110.08 s      | 113.65 s (1.89 min) | ~0.91 millones hashes/seg |
+| FabLab (práctica) | Equipo de práctica | 0.67 s        | 75.12 s       | 80.31 s (1.34 min)  | ~1.33 millones hashes/seg |
 
 La velocidad aproximada se calcula con la siguiente fórmula:
 
@@ -164,8 +164,7 @@ reglas encontraron `P0llito2025*`, `pap@s2019*`, `Pollo#2022*` y `elioth2000*`.
 
 ### Estrategia 4: Diccionario pequeño ampliado
 
-Se agregó una lista acotada de nombres frecuentes que no estaban en el Top
-3000. Así se encontraron `juan1999*`, `tomas2020*`, `yuly2002*` y `elioth2000*`.
+Se agregó una lista acotada de nombres frecuentes que no estaban en el Top 3000. Así se encontraron `juan1999*`, `tomas2020*`, `yuly2002*` y `elioth2000*`.
 La lista también se amplió con nombres de integrantes y estudiantes del curso;
 solo contiene nombres base, mientras que el año y el asterisco los genera el
 programa.
